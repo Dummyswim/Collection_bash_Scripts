@@ -5,16 +5,35 @@
 filename="file.txt"
 
 # Storing command in vairable and executing it
-com1="$(df -h /b | awk '{$1=""; print $0}')"
-com2="$(df -h /n | awk '{$1=""; print $0}')"
-
-# Different way of storing command in vairable and executing it
-#com1 = `df -h | grep $g1 | awk '{ print $0}'`
-#com2 = `df -h | grep $g2 | awk '{$1=""; print $0}'`
+#com6="$(df -h /b ; df -h /n)"
 
 # Loop through list of hosts
 while read -r line; do
-     echo "Logging to: $line"
-     ssh -q $line "$com1";
-     ssh -q $line "$com2";
+    echo "<------------------------------------------------------>"
+    echo "Logging to: $line"
+    echo " "
+    df=`ssh -q "$line" "df -h /b; echo; df -h /; echo; echo;" < /dev/null`
+    echo "$df"
 done < "$filename"
+
+
+#     Output
+#-----------------------------
+
+# <------------------------------------------------------>
+# Logging to: server1.domain.net
+#
+# Filesystem      Size  Used Avail Use% Mounted on
+# /dev/vdb        1.5T  541G  861G  39% /b
+#
+# Filesystem           Size  Used Avail Use% Mounted on
+# /dev/mapper/os-root  4.6G  546M  3.8G  13% /
+# <------------------------------------------------------>
+# Logging to: server2.domain.net
+#
+# Filesystem      Size  Used Avail Use% Mounted on
+# /dev/vdb        1.5T  969G  433G  70% /b
+#
+# Filesystem           Size  Used Avail Use% Mounted on
+# /dev/mapper/os-root  9.3G  755M  8.1G   9% /
+# <------------------------------------------------------>
