@@ -1,0 +1,38 @@
+#!/usr/bin/expect -f
+#
+# # Enable this to see the variable assignment and execution of script in verbose mode
+# #set -x
+#
+# # File to store hostnames
+# filename="file.txt"
+# # Loop through list of hosts and execute command
+# while read line; do
+#      # < /dev/null is important here to make sure that ssh should not read from stdin as input.
+#      #ssh -q "$line" "df -h ~; echo; echo; "  < /dev/null
+#      ssh -q -o PasswordAuthentication=no -o ConnectTimeout=1 -o StrictHostKeyChecking=no "$line" "df -h .; uptime; echo; echo; "  < /dev/null
+# done < $filename
+#
+
+
+set timeout 5
+set destuser bchavdi
+
+#set destpassword Z@P2g&Gp
+set destpassword Goal1$$
+set prompt "(%|#|\\$|%\]) $"
+set fid [open ./file.txt r]
+set contents [read -nonewline $fid]
+close $fid
+foreach host [split $contents "\n"] {
+spawn bash -c "ssh -q -o PasswordAuthentication=no -o ConnectTimeout=1 -o StrictHostKeyChecking=no "$line" "df -h .; uptime; echo; echo; "  < /dev/null"
+expect {
+  -re ".*es.*o.*" {
+    exp_send "yes\r"
+    exp_continue
+  }
+  -re ".*sword.*" {
+    exp_send "destpassword\r"
+  }
+}
+}
+interact

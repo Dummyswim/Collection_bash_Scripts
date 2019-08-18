@@ -1,0 +1,53 @@
+#!/usr/bin/expect
+
+
+
+
+set user [list root ]
+set password(0) "Z@P2g&Gp"
+set password(1) "gHpA!eM1"
+set password(2) "open2me"
+set cmd hostname
+set prompt "(%|#|\\$|%\]) $"
+#log_user 1
+set index 0
+# Get the list of hosts, one per line #####
+set f [open "host.txt"]
+set hosts [split [read $f] "\n"]
+close $f
+
+# Get the commands to run, one per line
+#set f [open "commands.txt"]
+#set commands [split [read $f] "\n"]
+#close $f
+
+# Iterate over the hosts
+foreach host $hosts {
+    set index 0
+    send_user "$password($index)\r"
+    spawn ssh -o StrictHostKeychecking=no -o CheckHostIP=no $user@$host
+
+    expect {
+      -re ".*yes/no.*" {
+      exp_send "yes\r"
+      exp_continue
+      }
+      -re ".*assword.*" {
+        send "$password($index)\r"
+        send_user "$password($index)\r"
+        incr index
+        exp_continue
+        }
+      -re ".*Permission denied, please try again.*" {
+#      incr index
+      exp_continue
+      }
+    }
+    expect -re "$prompt"
+    send "$cmd\r"
+
+    # Tidy up
+    expect -re "$prompt"
+    send "exit\r"
+    expect eof
+}
