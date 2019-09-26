@@ -1,0 +1,41 @@
+#!/usr/bin/expect
+
+set timeout 60
+set user bchavdi
+set password Goal1$$
+set prompt "(%|#|\\$|%\]) $"
+
+# Get the list of hosts, one per line #####
+set f [open "host.txt"]
+set hosts [split [read $f] "\n"]
+close $f
+
+# Get the commands to run, one per line
+set f [open "commands.txt"]
+set commands [split [read $f] "\n"]
+close $f
+
+# Iterate over the hosts
+foreach host $hosts {
+    spawn ssh $user@$host
+    expect {
+      -re ".*yes/no.*" {
+        exp_send "yes\r"
+        exp_continue
+    }
+    -re ".*assword.*" {
+        exp_send "$password\r"
+    }
+    }
+
+    # Iterate over the commands
+    foreach cmd $commands {
+        expect -re "$prompt"
+        send "$cmd\r"
+    }
+
+    # Tidy up
+    expect -re "$prompt"
+    send "exit\r"
+    expect eof
+}

@@ -1,13 +1,11 @@
 #!/usr/bin/expect
-
-
-
-
-set user [list _cloudmon ]
-set password(0) "Cloud123"
+set user root
+set password(0) "Z@P2g&Gp"
+set password(1) "gHpA!eM1"
+set password(2) "open2me"
 set cmd hostname
 set prompt "(%|#|\\$|%\]) $"
-#log_user 1
+#log_user 0
 set index 0
 # Get the list of hosts, one per line #####
 set f [open "host.txt"]
@@ -23,7 +21,7 @@ close $f
 foreach host $hosts {
     set index 0
     send_user "$password($index)\r"
-    spawn ssh -o StrictHostKeychecking=no -o CheckHostIP=no $user@$host
+    spawn ssh -q -o StrictHostKeychecking=no -o CheckHostIP=no $user@$host
 
     expect {
       -re ".*yes/no.*" {
